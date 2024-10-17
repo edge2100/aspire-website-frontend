@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.aspier.app",
+      "sha256_cert_fingerprints": [
+        "E3:AF:0D:DA:FB:C1:71:D8:0C:25:DE:F4:35:52:62:2E:B3:FE:94:E4:AF:42:90:84:67:9C:61:A2:4E:99:C8:5E"
+      ]
+    }
+  }
+]
