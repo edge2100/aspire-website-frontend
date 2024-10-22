@@ -5,12 +5,13 @@ import Aspire from "./screens/Aspire";
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Aspire />} />
-        {/* <Route path="/:certificate" element={<Certificate />} /> */}
-      </Routes>
-    </Router>
+    // <Router>
+    //   <Routes>
+    //     <Route path="/" element={<Aspire />} />
+    //     {/* <Route path="/:certificate" element={<Certificate />} /> */}
+    //   </Routes>
+    // </Router>
+    <Aspire />
   );
 };
 
