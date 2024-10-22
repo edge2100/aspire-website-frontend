@@ -1,5 +1,9 @@
 <IfModule mod_rewrite.c>
-  RewriteEngine On RewriteBase / RewriteRule ^\.well-known/ - [L] RewriteRule
-  ^index\.html$ - [L] RewriteCond %{REQUEST_FILENAME} !-f RewriteCond
-  %{REQUEST_FILENAME} !-d RewriteRule . /index.html [L]
+  RewriteEngine On RewriteBase / # Don't rewrite requests for existing files or
+  directories RewriteCond %{REQUEST_FILENAME} !-f RewriteCond
+  %{REQUEST_FILENAME} !-d # Don't redirect specific routes, e.g., '/anyroute'
+  and '.well-known' directory RewriteCond %{REQUEST_URI} !^/\.well-known/.* [NC]
+  RewriteCond %{REQUEST_URI} !^/anyroute [NC] # Add any routes you want to
+  exempt # Rewrite all other requests to index.html RewriteRule . /index.html
+  [L]
 </IfModule>
