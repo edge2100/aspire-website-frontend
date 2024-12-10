@@ -4,7 +4,7 @@ const Aspire = () => {
   const [htmlContent, setHtmlContent] = useState("");
 
   useEffect(() => {
-    fetch(`/aspire.html`)
+    fetch(`/index.html`)
       .then((response) => response.text())
       .then((data) => {
         setHtmlContent(data);
@@ -22,7 +22,7 @@ const Aspire = () => {
       }}
     >
       <iframe
-        src="/aspire.html"
+        src="/index.html"
         style={{
           width: "100%",
           height: "100%",
