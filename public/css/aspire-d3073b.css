@@ -1744,9 +1744,9 @@ figcaption {
 }
 
 .tabs {
-  grid-column-gap: 3rem;
-  grid-row-gap: 3rem;
-  justify-content: center;
+  grid-column-gap: 0rem;
+  grid-row-gap: 0rem;
+  justify-content: flex-end;
   align-items: center;
   display: flex;
 }
@@ -1817,11 +1817,13 @@ figcaption {
 }
 
 .tab-content-wrap {
-  grid-column-gap: 4rem;
-  grid-row-gap: 4rem;
-  justify-content: flex-start;
+  grid-column-gap: 3rem;
+  grid-row-gap: 3rem;
+  justify-content: center;
   align-items: center;
-  width: 50rem;
+  width: 52rem;
+  max-width: 55rem;
+  height: 40rem;
   display: flex;
 }
 
@@ -2046,8 +2048,9 @@ figcaption {
 }
 
 .agency-partner_logo_marquee {
-  width: 80%;
+  width: 15%;
   height: 5rem;
+  margin-left: .5rem;
   margin-right: .5rem;
   position: relative;
   overflow: clip;
@@ -2246,7 +2249,39 @@ figcaption {
 }
 
 .brand-logo {
-  width: 18rem;
+  width: 12rem;
+}
+
+.div-block {
+  background-image: linear-gradient(270deg, #d6d6d7, #9e9e9e00 50%, #dbdbdb);
+  position: absolute;
+  inset: 0%;
+}
+
+.logo-wrap {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  max-width: 23%;
+  height: 50px;
+  display: flex;
+  position: relative;
+  top: 0;
+}
+
+.changein-logo {
+  opacity: 0;
+  width: auto;
+  height: 2rem;
+  position: absolute;
+}
+
+.changein-logo.is-2 {
+  height: 3rem;
+}
+
+.changein-logo.is-2.is0big {
+  height: 4rem;
 }
 
 @media screen and (min-width: 1920px) {
@@ -2716,6 +2751,17 @@ figcaption {
     font-size: .875rem;
   }
 
+  .container-large {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .text-align-center.centered.is-stretch {
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .padding-section-medium {
     padding-top: 3rem;
     padding-bottom: 3rem;
@@ -2757,6 +2803,11 @@ figcaption {
     flex-flow: column;
   }
 
+  .flex-center_hz.is-gap.is-mob {
+    justify-content: flex-start;
+    align-items: center;
+  }
+
   .special-head {
     font-size: 3.5rem;
   }
@@ -2771,12 +2822,181 @@ figcaption {
     font-size: .85rem;
   }
 
+  .we-section {
+    padding-bottom: 4rem;
+  }
+
+  .body-text-big.is-left.form, .habits-box {
+    width: 100%;
+  }
+
+  .habits-box.is-last {
+    right: 0;
+    transform: none;
+  }
+
+  .habit-box-wrap {
+    flex-flow: column;
+  }
+
+  .usecase-section {
+    padding-bottom: 4rem;
+  }
+
+  .slider {
+    width: 90%;
+  }
+
+  .circle-shape {
+    width: 10rem;
+    top: 35%;
+  }
+
+  .habit-data-box {
+    background-color: #080808c4;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .blue-gradient {
+    left: 0;
+    right: 0;
+  }
+
+  .features-section {
+    padding-top: 10rem;
+  }
+
+  .arch-image {
+    top: -8rem;
+  }
+
+  .tabs {
+    flex-flow: column-reverse;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .tabs-menu {
+    grid-column-gap: .5rem;
+    grid-row-gap: .5rem;
+    flex-flow: row;
+  }
+
+  .tab-link {
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-left: .5rem;
+    padding-right: .5rem;
+    line-height: 1.25;
+    display: flex;
+  }
+
+  .tab-link.w--current {
+    width: 100%;
+    padding-left: .5rem;
+    padding-right: .5rem;
+  }
+
+  .tab-top {
+    font-size: 1rem;
+  }
+
+  .tab-top.is-small {
+    margin-bottom: 0;
+  }
+
+  .tab-big {
+    font-size: 1.15rem;
+  }
+
+  .tab-profile {
+    width: 1.15rem;
+  }
+
+  .tab-content-wrap {
+    grid-column-gap: .5rem;
+    grid-row-gap: .5rem;
+    flex-flow: row;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .feature-list-wrap {
+    width: 50%;
+  }
+
+  .c_tab-link_img {
+    width: 3.5rem;
+  }
+
+  .demo-section.is-bg-gradient {
+    padding-top: 0;
+  }
+
+  .app-mock-btm {
+    width: 5rem;
+  }
+
+  .clients-talk {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .liner-2 {
+    bottom: 0;
+  }
+
+  .inspire-box {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .team-wrap {
+    height: 20rem;
+  }
+
+  .team-head {
+    font-size: 5rem;
+  }
+
+  .flex-wide, .form-left {
+    width: 100%;
+  }
+
   .agency-partner_logo_marquee {
+    width: 100%;
     height: 6rem;
   }
 
   .agency-partner_logo_track {
     top: 0;
+  }
+
+  .form-wrap {
+    flex-flow: column;
+  }
+
+  .form-right {
+    width: 100%;
+    margin-top: 2rem;
+    padding-left: 0%;
+  }
+
+  .app-mock {
+    width: 50%;
+  }
+
+  .mock-wrapper {
+    margin-top: 2rem;
+  }
+
+  .star-icon {
+    width: 1.25rem;
   }
 }
 
@@ -2784,6 +3004,10 @@ figcaption {
   h1 {
     font-size: 1.75rem;
     line-height: 1.3;
+  }
+
+  h2 {
+    font-size: 1.75rem;
   }
 
   .margin-horizontal {
@@ -2876,6 +3100,11 @@ figcaption {
     padding-right: 15px;
   }
 
+  .container-large.is-relative.is-tab {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
   .container-large.mob {
     padding-left: 0;
     padding-right: 0;
@@ -2891,6 +3120,10 @@ figcaption {
 
   .spacer-huge.small-mob {
     padding-top: 2rem;
+  }
+
+  .spacer-small.is-mob {
+    padding-top: .5rem;
   }
 
   .hero_heading {
@@ -2925,6 +3158,10 @@ figcaption {
     grid-row-gap: .5rem;
   }
 
+  .flex-center_hz.is-form {
+    flex-flow: row;
+  }
+
   .special-head {
     font-size: 3rem;
   }
@@ -2947,6 +3184,7 @@ figcaption {
 
   .body-text-big.is-left.form {
     text-align: left;
+    flex: 1;
   }
 
   .body-text-big.is-right {
@@ -3005,7 +3243,7 @@ figcaption {
 
   .circle-shape {
     width: 125px;
-    top: 37%;
+    top: 40%;
   }
 
   .habit-data-box {
@@ -3041,38 +3279,58 @@ figcaption {
   }
 
   .tabs {
-    grid-column-gap: 0rem;
-    grid-row-gap: 0rem;
-    flex-flow: column;
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+    flex-flow: column-reverse;
+    overflow: hidden;
   }
 
   .tabs-menu {
-    flex-flow: column;
-    justify-content: space-between;
-    align-items: center;
+    flex-flow: row;
+    justify-content: flex-start;
+    align-items: stretch;
     width: 100%;
+    display: flex;
+    overflow: auto;
   }
 
   .tab-link {
-    width: 100%;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    flex: none;
+    grid-template-rows: auto auto;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-columns: 1fr;
+    width: auto;
     margin-top: 0;
+    display: flex;
   }
 
   .tab-link.w--current {
-    width: 100%;
+    width: auto;
   }
 
   .tab-content-wrap {
-    grid-column-gap: 2rem;
-    grid-row-gap: 2rem;
-    flex-flow: column;
+    grid-column-gap: .75rem;
+    grid-row-gap: .75rem;
+    flex-flow: row;
+    justify-content: center;
+    align-items: flex-start;
     width: 100%;
   }
 
+  .tab-content {
+    grid-column-gap: .25rem;
+    grid-row-gap: .25rem;
+    justify-content: flex-start;
+    align-items: flex-start;
+    font-size: .85rem;
+  }
+
   .feature-list-wrap {
-    grid-column-gap: 1rem;
-    grid-row-gap: 1rem;
-    width: 100%;
+    grid-column-gap: .5rem;
+    grid-row-gap: .5rem;
+    width: 70%;
   }
 
   .content-wrap {
@@ -3084,13 +3342,13 @@ figcaption {
     padding-bottom: 4rem;
   }
 
-  .app-mock-btm {
-    width: 50px;
-    bottom: -40px;
+  .demo-section.is-bg-gradient {
+    padding-bottom: 2rem;
   }
 
-  .app-mock-btm.is-left {
-    bottom: -40px;
+  .app-mock-btm, .app-mock-btm.is-left {
+    width: 40px;
+    bottom: 0;
   }
 
   .clients-talk {
@@ -3112,14 +3370,20 @@ figcaption {
   }
 
   .inspire-box {
+    color: #5f5f5f;
     width: 100%;
     margin-bottom: 3rem;
     padding-left: 0;
     padding-right: 0;
+    font-size: 1rem;
   }
 
   .team-wrap {
     height: 12rem;
+  }
+
+  .team {
+    margin-top: 20px;
   }
 
   .team-head {
@@ -3181,6 +3445,7 @@ figcaption {
   }
 
   .cta-cc {
+    margin-left: .5rem;
     padding-left: 2rem;
     padding-right: 2rem;
     display: inline-block;
@@ -3189,6 +3454,10 @@ figcaption {
   .footer-text {
     width: 60%;
     font-size: .85rem;
+  }
+
+  .app-mock {
+    width: 30%;
   }
 
   .lightbox-link {
@@ -3209,6 +3478,7 @@ figcaption {
 
   .video-gif {
     border-radius: 13px;
+    width: 200px;
   }
 
   .mock-wrapper {
@@ -3274,7 +3544,21 @@ figcaption {
   }
 
   .brand-logo {
-    width: 15rem;
+    width: 10rem;
+  }
+
+  .logo-wrap {
+    max-width: 40%;
+  }
+
+  .icon-tab {
+    display: none;
+  }
+
+  .icon-tab.mob-only {
+    width: .4rem;
+    margin-top: .45rem;
+    display: block;
   }
 }
 
