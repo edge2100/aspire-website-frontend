@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.app.aspire",
+      "package_name": "com.aspier.app",
       "sha256_cert_fingerprints": [
-        "28:75:DD:A6:EE:6B:AB:AB:42:B7:45:84:C2:84:92:CC:85:BD:3B:A0:ED:35:62:62:B7:8A:35:49:BF:6B:7A:86"
+        "E3:AF:0D:DA:FB:C1:71:D8:0C:25:DE:F4:35:52:62:2E:B3:FE:94:E4:AF:42:90:84:67:9C:61:A2:4E:99:C8:5E"
       ]
     }
   }
