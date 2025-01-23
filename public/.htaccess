@@ -1,3 +1,6 @@
 RewriteEngine On
 RewriteCond %{REQUEST_URI} ^/.well-known/assetlinks.json$
 RewriteRule ^ - [L]
+
+RewriteCond %{HTTP_HOST} ^aspirenow.in [NC]
+RewriteRule ^(.*)$ http://www.aspirenow.in/$1 [L,R=301]
