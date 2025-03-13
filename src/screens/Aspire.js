@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 
 const Aspire = () => {
-  const [htmlContent, setHtmlContent] = useState("");
+  // const [htmlContent, setHtmlContent] = useState("");
 
-  useEffect(() => {
-    fetch(`/aspire.html`)
-      .then((response) => response.text())
-      .then((data) => {
-        setHtmlContent(data);
-      })
-      .catch((error) => console.error("Error loading HTML:", error));
-  }, []);
+  // useEffect(() => {
+  //   fetch(`/aspire.html`)
+  //     .then((response) => response.text())
+  //     .then((data) => {
+  //       setHtmlContent(data);
+  //     })
+  //     .catch((error) => console.error("Error loading HTML:", error));
+  // }, []);
 
   return (
     <div
