@@ -2,6 +2,8 @@ import React from "react";
 // import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // import Certificate from "./screens/Certificate";
 import Aspire from "./screens/Aspire";
+import Clarity from '@microsoft/clarity';
+Clarity.init("oxf1beiydw");
 
 const App = () => {
   return (
