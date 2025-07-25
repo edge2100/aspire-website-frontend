@@ -303,6 +303,25 @@ a,
                         <button class="tesa-sent_btn" onclick="sendInput" type="submit">Send</button>
                       </form>
                       <style>
+                        @keyframes pulse {
+                          0% {
+                            opacity: 0.6;
+                          }
+
+                          50% {
+                            opacity: 1;
+                          }
+
+                          100% {
+                            opacity: 0.6;
+                          }
+                        }
+
+                        .typing-indicator {
+                          color: #667eea;
+                          font-size: 1.2em;
+                        }
+
                         .flex {
                           display: block;
                           width: 100%;
@@ -341,6 +360,7 @@ a,
                             margin-bottom: 0px;
                             border-radius: 6px;
                           }
+                        }
                       </style>
                     </div>
                   </div>
@@ -497,7 +517,7 @@ a,
                 habit formation. He wrote the best-sellers &quot;Hooked&quot; and &quot;Indistractable,&quot; focusing
                 on habit-forming products and attention control..</span></div>
             <div class="spacer-small"></div>
-            <a href="https://www.google.com/search?q=Nir+Eyal%C2%A0&amp;sca_esv=5430cf780e99fb8b&amp;sxsrf=ADLYWIKYvXeQs-HHKCoPib41q3NgkUxq3g:1733756753143&amp;ei=UQdXZ8u4CI6f4-EPz-2I6As&amp;ved=0ahUKEwiLpZeb-5qKAxWOzzgGHc82Ar0Q4dUDCA8&amp;uact=5&amp;oq=Nir+Eyal%C2%A0&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiCk5pciBFeWFswqAyCxAuGIAEGJECGIoFMgsQABiABBiRAhiKBTILEAAYgAQYkQIYigUyCxAAGIAEGJECGIoFMgUQLhiABDIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAEMhoQLhiABBiRAhiKBRiXBRjcBBjeBBjgBNgBAUjsCVClBlilBnABeAGQAQCYAb0BoAG9AaoBAzAuMbgBA8gBAPgBAfgBApgCAqAC1QGoAhLCAgcQIxgnGOoCwgIWEC4YgAQYQxi0AhjIAxiKBRjqAtgBAZgDC_EFyLETaKx4RLW6BgYIARABGAiSBwUxLjAuMaAHqgo&amp;sclient=gws-wiz-serp"
+            <a href="https://www.google.com/search?q=Nir+Eyal%C2%A0&amp;sca_esv=5430cf780e99fb8b&amp;sxsrf=ADLYWIKYvXeQs-HHKCoPib41q3NgkUxq3g:1733756753143&amp;ei=UQdXZ8u4CI6f4-EPz-2I6As&amp;ved=0ahUKEwiLpZeb-5qKAxWOzzgGHc82Ar0Q4dUDCA8&amp;uact=5&amp;oq=Nir+Eyal%C2%A0&amp;gs_lp=Egxnd3Mtd2l6LXNlcnAiCk5pciBFeWFswqAyCxAuGIAEGJECGIoFMgsQABiABBiRAhiKBTILEAAYgAQYkQIYigUyCxAAGIAEGJECGIoFMgUQLhiABDIFEAAYgAQyBRAAGIAEMgUQABiABDIFEAAYgAQyBRAAGIAEMhoQLhiABBiRAhiKBRiXBRjcBBjeBBjgBNgBAUjsCVClBlilBnABeAGQAQCYAb0BoAG9AaoBAzAuMbgBA8gBAPgBAfgBApgCAqAC1QGoAhLCAgcQIxgnGOoCwgIWEC4YgAQYQxi0AhjIAxiKBRjqAtgBAZgDC_EFyLETaKx4RLW6BgYIARABGAGSBwUxLjAuMaAHtQc&amp;sclient=gws-wiz-serp"
               target="_blank" class="cta-btn_2">Know More</a>
           </div>
           <div class="inspire-box">
@@ -824,16 +844,146 @@ a,
       const container = document.querySelector(".tesa-chat_wrap");
       const messageDiv = document.createElement("div");
       messageDiv.className = "w-layout-hflex tesa-chat_question";
+
+      // Create initial message structure with typing indicator
       messageDiv.innerHTML = `
       <div class="profile-icon"></div>
       <div>
         <div class="text-size-medium text-weight-bold">TESA</div>
-        <div>${answer}</div>
+        <div class="typing-content">
+          <span class="typing-indicator" style="animation: pulse 1.5s infinite;">●●●</span>
+        </div>
       </div>
     `;
       container.appendChild(messageDiv);
       container.scrollTop = container.scrollHeight;
+
+      // Start typing animation after a short delay
+      setTimeout(() => {
+        startTypingAnimation(answer, messageDiv.querySelector('.typing-content'));
+      }, 800);
     }
+
+    function startTypingAnimation(text, targetElement) {
+      const formattedText = formatTesaResponse(text);
+
+      // Remove typing indicator
+      targetElement.innerHTML = '';
+
+      // Create a temporary container to hold the full formatted content
+      const tempContainer = document.createElement('div');
+      tempContainer.innerHTML = formattedText;
+      tempContainer.style.visibility = 'hidden';
+      tempContainer.style.position = 'absolute';
+      document.body.appendChild(tempContainer);
+
+      // Get all text nodes from the formatted content
+      const textNodes = getTextNodesInOrder(tempContainer);
+      const totalText = textNodes.map(node => node.textContent).join('');
+
+      // Clean up temp container
+      document.body.removeChild(tempContainer);
+
+      // Set up the formatted structure immediately but hide text
+      targetElement.innerHTML = formattedText;
+      const displayTextNodes = getTextNodesInOrder(targetElement);
+
+      // Clear all text content initially
+      displayTextNodes.forEach(node => node.textContent = '');
+
+      let currentNodeIndex = 0;
+      let currentCharIndex = 0;
+      const typingSpeed = 25;
+
+      // Track user scroll behavior
+      const container = document.querySelector('.tesa-chat_wrap');
+      let userHasScrolled = false;
+      let wasAtBottom = true;
+
+      // Detect if user scrolls up
+      const originalScrollTop = container.scrollTop;
+      container.addEventListener('scroll', function scrollHandler() {
+        const isAtBottom = container.scrollTop >= container.scrollHeight - container.clientHeight - 10;
+        if (!isAtBottom && container.scrollTop < originalScrollTop) {
+          userHasScrolled = true;
+        }
+        if (isAtBottom) {
+          userHasScrolled = false;
+        }
+        wasAtBottom = isAtBottom;
+      });
+
+      function typeCharacter() {
+        if (currentNodeIndex < displayTextNodes.length) {
+          const currentNode = displayTextNodes[currentNodeIndex];
+          const originalText = textNodes[currentNodeIndex].textContent;
+
+          if (currentCharIndex < originalText.length) {
+            // Add next character
+            currentNode.textContent = originalText.substring(0, currentCharIndex + 1);
+            currentCharIndex++;
+
+            // Auto-scroll only if user hasn't scrolled up
+            if (!userHasScrolled) {
+              container.scrollTop = container.scrollHeight;
+            }
+
+            setTimeout(typeCharacter, typingSpeed);
+          } else {
+            // Move to next text node
+            currentNodeIndex++;
+            currentCharIndex = 0;
+            setTimeout(typeCharacter, typingSpeed);
+          }
+        }
+      }
+
+      typeCharacter();
+    }
+
+    function getTextNodesInOrder(element) {
+      const textNodes = [];
+      const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode: function (node) {
+            return node.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+          }
+        }
+      );
+
+      let node;
+      while (node = walker.nextNode()) {
+        textNodes.push(node);
+      }
+      return textNodes;
+    }
+
+    function formatTesaResponse(text) {
+      // Convert markdown-style formatting to HTML
+      let formattedText = text
+        // Convert ### headers to h3 tags
+        .replace(/^### (.*$)/gm, '<h3 style="margin: 1rem 0 0.5rem 0; font-size: 1.2em; font-weight: bold;">$1</h3>')
+        // Convert #### headers to h4 tags  
+        .replace(/^#### (.*$)/gm, '<h4 style="margin: 1rem 0 0.5rem 0; font-size: 1.1em; font-weight: bold;">$1</h4>')
+        // Convert double line breaks to paragraph breaks
+        .replace(/\n\n/g, '</p><p style="margin: 1rem 0;">')
+        // Convert single line breaks to br tags
+        .replace(/\n/g, '<br>')
+        // Add opening paragraph tag
+        .replace(/^/, '<p style="margin: 1rem 0;">')
+        // Add closing paragraph tag
+        .replace(/$/, '</p>')
+        // Clean up empty paragraphs
+        .replace(/<p style="margin: 1rem 0;"><\/p>/g, '')
+        // Fix paragraphs around headers
+        .replace(/<\/p><h([34])/g, '</p><h$1')
+        .replace(/<\/h([34])><p style="margin: 1rem 0;">/g, '</h$1><p style="margin: 1rem 0;">');
+
+      return formattedText;
+    }
+
     function sendInput(event) {
       event.preventDefault();
       const inputField = document.getElementById("inputField");
