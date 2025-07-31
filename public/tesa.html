@@ -869,21 +869,18 @@ a,
     }
 
     function startTypingAnimation(text, targetElement) {
-      // Remove typing indicator
       targetElement.innerHTML = '';
-
-      // Parse the text into structured content
       const contentStructure = parseTextStructure(text);
 
       let currentElementIndex = 0;
       let currentCharIndex = 0;
       const typingSpeed = 25;
+      let iterations = 0;
+      const maxIterations = 15000; // FIXED: Increased limit
 
-      // Track user scroll behavior
       const container = document.querySelector('.tesa-chat_wrap');
       let userHasScrolled = false;
 
-      // Detect if user scrolls up
       const originalScrollTop = container.scrollTop;
       container.addEventListener('scroll', function scrollHandler() {
         const isAtBottom = container.scrollTop >= container.scrollHeight - container.clientHeight - 10;
@@ -895,54 +892,238 @@ a,
         }
       });
 
+
       function typeCharacter() {
+        iterations++;
+        if (iterations > maxIterations) {
+          console.error('Typing animation exceeded maximum iterations, completing remaining content.');
+          // FIXED: Complete remaining content instead of stopping
+          completeRemainingContent();
+          return;
+        }
+
         if (currentElementIndex < contentStructure.length) {
           const currentContent = contentStructure[currentElementIndex];
 
-          // Create element if it doesn't exist yet
+          // FIXED: Better validation
+          if (!currentContent || !currentContent.type) {
+            console.warn('Invalid content at index:', currentElementIndex);
+            currentElementIndex++;
+            setTimeout(typeCharacter, typingSpeed);
+            return;
+          }
+
           let currentElement = targetElement.children[currentElementIndex];
           if (!currentElement) {
             currentElement = createElementFromContent(currentContent);
             targetElement.appendChild(currentElement);
           }
 
-          if (currentCharIndex < currentContent.text.length) {
-            // Add next character
-            if (currentContent.type === 'text') {
-              currentElement.textContent = currentContent.text.substring(0, currentCharIndex + 1);
+          if (currentContent.type === 'list') {
+            if (!currentContent.hasOwnProperty('currentItemIndex')) {
+              currentContent.currentItemIndex = 0;
+              currentContent.currentItemCharIndex = 0;
+            }
+
+            const currentItemIndex = currentContent.currentItemIndex;
+            const items = currentContent.items || [];
+
+            if (currentItemIndex < items.length) {
+              const currentItem = items[currentItemIndex];
+
+              // FIXED: Better validation for list items
+              if (!currentItem || typeof currentItem !== 'string' || currentItem.trim().length === 0) {
+                console.warn('Skipping invalid list item:', currentItem);
+                currentContent.currentItemIndex++;
+                currentContent.currentItemCharIndex = 0;
+                setTimeout(typeCharacter, typingSpeed);
+                return;
+              }
+
+              let listItemElement = currentElement.children[currentItemIndex];
+              if (!listItemElement) {
+                listItemElement = document.createElement('div');
+                listItemElement.style.cssText = 'margin: 0.2rem 0; padding-left: 1rem; line-height: 1.4; position: relative;';
+
+                const bullet = document.createElement('span');
+                bullet.style.cssText = 'position: absolute; left: 0; top: 0; font-weight: normal;';
+
+                if (currentItem.match(/^\d+\.\s+/)) {
+                  bullet.textContent = currentItem.match(/^\d+\./)[0];
+                } else if (currentItem.startsWith('- ')) {
+                  bullet.textContent = '•';
+                } else {
+                  bullet.textContent = '•';
+                }
+
+                listItemElement.appendChild(bullet);
+                currentElement.appendChild(listItemElement);
+              }
+
+              // Extract item text
+              let itemText = currentItem;
+              if (currentItem.match(/^\d+\.\s+/)) {
+                itemText = currentItem.replace(/^\d+\.\s*/, '');
+              } else if (currentItem.startsWith('- ')) {
+                itemText = currentItem.replace(/^-\s*/, '');
+              }
+
+              // FIXED: Additional validation for item text
+              if (!itemText || itemText.trim().length === 0) {
+                console.warn('Empty item text, skipping to next item');
+                currentContent.currentItemIndex++;
+                currentContent.currentItemCharIndex = 0;
+                setTimeout(typeCharacter, typingSpeed);
+                return;
+              }
+
+              if (currentContent.currentItemCharIndex < itemText.length) {
+                const displayText = itemText.substring(0, currentContent.currentItemCharIndex + 1);
+                const bullet = listItemElement.firstChild;
+                listItemElement.innerHTML = '';
+                listItemElement.appendChild(bullet);
+
+                const textNode = document.createTextNode(displayText);
+                listItemElement.appendChild(textNode);
+
+                // Apply formatting when complete
+                if (currentContent.currentItemCharIndex >= itemText.length - 1) {
+                  const formattedText = formatTextWithMarkdown(itemText);
+                  listItemElement.innerHTML = '';
+                  listItemElement.appendChild(bullet);
+                  const span = document.createElement('span');
+                  span.innerHTML = formattedText;
+                  listItemElement.appendChild(span);
+                }
+
+                currentContent.currentItemCharIndex++;
+
+                if (!userHasScrolled) {
+                  container.scrollTop = container.scrollHeight;
+                }
+
+                setTimeout(typeCharacter, typingSpeed);
+              } else {
+                currentContent.currentItemIndex++;
+                currentContent.currentItemCharIndex = 0;
+                setTimeout(typeCharacter, typingSpeed);
+              }
             } else {
-              // For headers and other formatted elements, update the text content
-              currentElement.textContent = currentContent.text.substring(0, currentCharIndex + 1);
+              currentElementIndex++;
+              currentCharIndex = 0;
+              setTimeout(typeCharacter, typingSpeed);
             }
-            currentCharIndex++;
-
-            // Auto-scroll only if user hasn't scrolled up
-            if (!userHasScrolled) {
-              container.scrollTop = container.scrollHeight;
-            }
-
-            setTimeout(typeCharacter, typingSpeed);
           } else {
-            // Move to next element
-            currentElementIndex++;
-            currentCharIndex = 0;
-            setTimeout(typeCharacter, typingSpeed);
+            const textContent = currentContent.text || '';
+
+            // FIXED: Handle empty text content
+            if (!textContent || textContent.trim().length === 0) {
+              console.warn('Empty text content, moving to next element');
+              currentElementIndex++;
+              currentCharIndex = 0;
+              setTimeout(typeCharacter, typingSpeed);
+              return;
+            }
+
+            if (currentCharIndex < textContent.length) {
+              let displayText = textContent.substring(0, currentCharIndex + 1);
+              currentElement.textContent = displayText;
+
+              if (currentCharIndex >= textContent.length - 1) {
+                if (currentContent.type === 'paragraph' || currentContent.type === 'section-header') {
+                  currentElement.innerHTML = formatTextWithMarkdown(textContent);
+                }
+              }
+
+              currentCharIndex++;
+
+              if (!userHasScrolled) {
+                container.scrollTop = container.scrollHeight;
+              }
+
+              setTimeout(typeCharacter, typingSpeed);
+            } else {
+              currentElementIndex++;
+              currentCharIndex = 0;
+              setTimeout(typeCharacter, typingSpeed);
+            }
           }
+        } else {
+          console.log('Typing animation completed successfully');
+        }
+      }
+      function completeRemainingContent() {
+        while (currentElementIndex < contentStructure.length) {
+          const currentContent = contentStructure[currentElementIndex];
+
+          if (!currentContent || !currentContent.type) {
+            currentElementIndex++;
+            continue;
+          }
+
+          let currentElement = targetElement.children[currentElementIndex];
+          if (!currentElement) {
+            currentElement = createElementFromContent(currentContent);
+            targetElement.appendChild(currentElement);
+          }
+
+          if (currentContent.type === 'list') {
+            currentElement.innerHTML = '';
+            currentContent.items.forEach((item, index) => {
+              if (!item || typeof item !== 'string') return;
+
+              const listItem = document.createElement('div');
+              listItem.style.cssText = 'margin: 0.2rem 0; padding-left: 1rem; line-height: 1.4; position: relative;';
+
+              const bullet = document.createElement('span');
+              bullet.style.cssText = 'position: absolute; left: 0; top: 0; font-weight: normal;';
+
+              let itemText = item;
+              if (item.match(/^\d+\.\s+/)) {
+                bullet.textContent = item.match(/^\d+\./)[0];
+                itemText = item.replace(/^\d+\.\s*/, '');
+              } else if (item.startsWith('- ')) {
+                bullet.textContent = '•';
+                itemText = item.replace(/^-\s*/, '');
+              } else {
+                bullet.textContent = '•';
+              }
+
+              listItem.appendChild(bullet);
+              const span = document.createElement('span');
+              span.innerHTML = formatTextWithMarkdown(itemText);
+              listItem.appendChild(span);
+              currentElement.appendChild(listItem);
+            });
+          } else {
+            currentElement.innerHTML = formatTextWithMarkdown(currentContent.text || '');
+          }
+
+          currentElementIndex++;
+        }
+
+        if (!userHasScrolled) {
+          container.scrollTop = container.scrollHeight;
         }
       }
 
       typeCharacter();
     }
+
+
     function parseTextStructure(text) {
+      console.log('Parsing text:', text.substring(0, 200) + '...');
       const lines = text.split('\n');
       const structure = [];
       let currentParagraph = '';
+      let inList = false;
+      let currentList = [];
 
       for (let line of lines) {
-        line = line.trim();
+        const trimmedLine = line.trim();
 
-        if (line.startsWith('### ')) {
-          // Save current paragraph if exists
+        // Handle headers
+        if (trimmedLine.startsWith('### ')) {
           if (currentParagraph) {
             structure.push({
               type: 'paragraph',
@@ -950,13 +1131,19 @@ a,
             });
             currentParagraph = '';
           }
-          // Add header
+          if (inList && currentList.length > 0) {
+            structure.push({
+              type: 'list',
+              items: [...currentList]
+            });
+            currentList = [];
+            inList = false;
+          }
           structure.push({
             type: 'h3',
-            text: line.substring(4)
+            text: trimmedLine.substring(4).trim()
           });
-        } else if (line.startsWith('#### ')) {
-          // Save current paragraph if exists
+        } else if (trimmedLine.startsWith('#### ')) {
           if (currentParagraph) {
             structure.push({
               type: 'paragraph',
@@ -964,13 +1151,21 @@ a,
             });
             currentParagraph = '';
           }
-          // Add header
+          if (inList && currentList.length > 0) {
+            structure.push({
+              type: 'list',
+              items: [...currentList]
+            });
+            currentList = [];
+            inList = false;
+          }
           structure.push({
             type: 'h4',
-            text: line.substring(5)
+            text: trimmedLine.substring(5).trim()
           });
-        } else if (line === '') {
-          // Empty line - end current paragraph
+        }
+        // Handle section headers - FIXED: Better validation
+        else if (trimmedLine.endsWith(':') && !trimmedLine.match(/^\d+\./) && trimmedLine.length > 2 && !trimmedLine.includes(' ')) {
           if (currentParagraph) {
             structure.push({
               type: 'paragraph',
@@ -978,43 +1173,133 @@ a,
             });
             currentParagraph = '';
           }
-        } else {
-          // Regular text - add to current paragraph
+          if (inList && currentList.length > 0) {
+            structure.push({
+              type: 'list',
+              items: [...currentList]
+            });
+            currentList = [];
+            inList = false;
+          }
+          structure.push({
+            type: 'section-header',
+            text: trimmedLine
+          });
+        }
+        // Handle numbered lists - FIXED: Better validation for proper format
+        else if (trimmedLine.match(/^\d+\.\s+.+/)) {
           if (currentParagraph) {
-            currentParagraph += ' ' + line;
+            structure.push({
+              type: 'paragraph',
+              text: currentParagraph.trim()
+            });
+            currentParagraph = '';
+          }
+          currentList.push(trimmedLine);
+          inList = true;
+        }
+        // Handle bullet points
+        else if (trimmedLine.startsWith('- ') && trimmedLine.length > 2) {
+          if (currentParagraph) {
+            structure.push({
+              type: 'paragraph',
+              text: currentParagraph.trim()
+            });
+            currentParagraph = '';
+          }
+          currentList.push(trimmedLine);
+          inList = true;
+        }
+        // Handle empty lines
+        else if (trimmedLine === '') {
+          if (currentParagraph) {
+            structure.push({
+              type: 'paragraph',
+              text: currentParagraph.trim()
+            });
+            currentParagraph = '';
+          }
+          if (inList && currentList.length > 0) {
+            structure.push({
+              type: 'list',
+              items: [...currentList]
+            });
+            currentList = [];
+            inList = false;
+          }
+        }
+        // Regular text
+        else {
+          if (inList && currentList.length > 0) {
+            structure.push({
+              type: 'list',
+              items: [...currentList]
+            });
+            currentList = [];
+            inList = false;
+          }
+          if (currentParagraph) {
+            currentParagraph += ' ' + trimmedLine;
           } else {
-            currentParagraph = line;
+            currentParagraph = trimmedLine;
           }
         }
       }
 
-      // Add final paragraph if exists
+      // Handle remaining content
       if (currentParagraph) {
         structure.push({
           type: 'paragraph',
           text: currentParagraph.trim()
         });
       }
+      if (inList && currentList.length > 0) {
+        structure.push({
+          type: 'list',
+          items: [...currentList]
+        });
+      }
 
+      console.log('Parsed structure:', structure);
       return structure;
     }
 
+    function formatTextWithMarkdown(text) {
+      // Convert **bold** to <strong> tags
+      let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      // Convert *italic* to <em> tags  
+      formattedText = formattedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      return formattedText;
+    }
+
+    // Replace your createElementFromContent function with this:
     function createElementFromContent(content) {
       let element;
 
       switch (content.type) {
         case 'h3':
           element = document.createElement('h3');
-          element.style.cssText = 'margin: 1rem 0 0.5rem 0; font-size: 1.2em; font-weight: bold;';
+          element.style.cssText = 'margin: 1rem 0 0.5rem 0; font-size: 1.1em; font-weight: bold;';
           break;
         case 'h4':
           element = document.createElement('h4');
-          element.style.cssText = 'margin: 1rem 0 0.5rem 0; font-size: 1.1em; font-weight: bold;';
+          element.style.cssText = 'margin: 0.8rem 0 0.4rem 0; font-size: 1.05em; font-weight: bold;';
+          break;
+        case 'section-header':
+          element = document.createElement('div');
+          element.style.cssText = 'margin: 1rem 0 0.3rem 0; font-size: 1em; font-weight: bold;';
+          break;
+        case 'list':
+          element = document.createElement('div');
+          element.style.cssText = 'margin: 0.5rem 0; padding-left: 0;';
+          // FIXED: Don't pre-create list items - let typing animation handle them
           break;
         case 'paragraph':
         default:
           element = document.createElement('p');
-          element.style.cssText = 'margin: 1rem 0; line-height: 1.5;';
+          element.style.cssText = 'margin: 0.5rem 0; line-height: 1.4;';
           break;
       }
 
@@ -1087,12 +1372,133 @@ a,
           console.error('Error calling post-chat API:', error);
         });
     }
+    // Initialize form handlers with better timing
+    function initializeForms() {
+      // Initialize chat form
+      const chatForm = document.getElementById('myForm');
+      if (chatForm && !chatForm.hasAttribute('data-initialized')) {
+        chatForm.addEventListener('submit', sendInput);
+        chatForm.setAttribute('data-initialized', 'true');
+      }
+
+      // Initialize email form
+      const emailForm = document.getElementById("email-form");
+      if (emailForm && !emailForm.hasAttribute('data-initialized')) {
+        emailForm.addEventListener("submit", async (event) => {
+          event.preventDefault(); // Prevent the default form submission
+
+          console.log('Email form submit event triggered');
+
+          // Collect form data
+          const formData = new FormData(emailForm);
+          const formObject = {};
+
+          // Map TESA field names to API expected field names
+          const fieldMapping = {
+            'Full-Name-2': 'full_name',
+            'Phone-No-2': 'phone_number',
+            'Organization-Name-2': 'organization_name',
+            'Email-ID-2': 'email',
+            'No.-of-Employees-2': 'no_of_emp'
+          };
+
+          formData.forEach((value, key) => {
+            const mappedKey = fieldMapping[key] || key;
+            formObject[mappedKey] = value;
+          });
+
+          console.log('Original form data:', Object.fromEntries(formData));
+          console.log('Mapped form data for API:', formObject);
+
+          // API endpoint
+          const apiEndpoint = 'https://apicuration.aspirenow.in/v2/get-leads';
+
+          try {
+            console.log('Sending request to API:', apiEndpoint);
+
+            // Make a POST request to the API
+            const response = await fetch(apiEndpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formObject),
+            });
+
+            console.log('API response received:', response.status);
+
+            // Check if the request was successful
+            if (response.ok) {
+              const data = await response.json();
+              console.log('First API call successful:', data);
+            } else {
+              console.error('First API call failed:', response);
+            }
+          } catch (error) {
+            console.error('Error with first API call:', error);
+          }
+
+          // Second API call (the one that sends emails)
+          const apiEndpoint2 = 'https://api.thrivingworkplace.in/report/get-lead-data';
+
+          try {
+            console.log('Sending request to second API:', apiEndpoint2);
+
+            // Make a POST request to the second API
+            const response2 = await fetch(apiEndpoint2, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formObject),
+            });
+
+            console.log('Second API response received:', response2.status);
+
+            // Check if the request was successful
+            if (response2.ok) {
+              const data2 = await response2.json();
+              console.log('Second API call successful (emails should be sent):', data2);
+              emailForm.reset();
+
+              // Show success message
+              const successMessage = document.querySelector('.success-message');
+              if (successMessage) {
+                successMessage.style.display = 'block';
+              }
+            } else {
+              console.error('Second API call failed:', response2);
+              alert('Form submission failed. Please try again.');
+            }
+          } catch (error) {
+            console.error('Error with second API call:', error);
+            alert('An error occurred. Please try again.');
+          }
+        });
+        emailForm.setAttribute('data-initialized', 'true');
+        console.log('Email form initialized successfully');
+      }
+    }
+
+    // Initialize on DOM ready
     document.addEventListener('DOMContentLoaded', function () {
+      console.log('DOM Content Loaded');
+
       if (!localStorage.getItem('deviceId')) {
         createUser();
       }
-      const form = document.getElementById('myForm');
-      form.addEventListener('submit', sendInput);
+
+      // Initialize forms immediately
+      initializeForms();
+
+      // Also initialize after a short delay to handle any timing issues
+      setTimeout(initializeForms, 100);
+    });
+
+    // Also initialize when page is fully loaded (backup)
+    window.addEventListener('load', function () {
+      console.log('Window loaded');
+      initializeForms();
     });
   </script>
 </body>
